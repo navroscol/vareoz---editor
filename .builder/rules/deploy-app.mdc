@@ -1,0 +1,4 @@
+# Deploy
+- Producción: `vercel --prod`
+- Vista previa: `vercel`
+- Variables: configurar en Vercel → Settings → Environment Variables.

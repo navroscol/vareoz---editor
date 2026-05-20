@@ -1,0 +1,4 @@
+# UI conventions
+- Tailwind + shadcn/ui.
+- Componentes en `client/components/ui/*`.
+- Páginas en `client/pages/*` con subcarpetas por flujo (landing, dashboard…).
