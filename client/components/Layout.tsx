@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Outlet } from "react-router-dom";
-import Navbar from "@/pages/landing/Navbar";
+import Navbar from "@/templates/landing/Navbar";
 
 export default function Layout() {
   return (

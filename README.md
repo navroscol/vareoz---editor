@@ -22,8 +22,8 @@ npx vercel --prod
 ```
 
 ## Estructura
-- `src/pages/` — una página por cada lienzo del editor.
-- `src/components/generated/` — componentes 21st.dev usados (editables).
-- `src/components/ui/` — primitivas shadcn/ui completas.
-- `src/lib/utils.ts` — helper `cn()`.
-- `src/global.css` — Tailwind base + variables shadcn (light/dark).
+- `client/pages/` — una página por cada lienzo del editor.
+- `client/components/generated/` — componentes 21st.dev usados (editables).
+- `client/components/ui/` — primitivas shadcn/ui completas.
+- `client/lib/utils.ts` — helper `cn()`.
+- `client/global.css` — Tailwind base + variables shadcn (light/dark).

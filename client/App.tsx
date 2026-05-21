@@ -40,6 +40,7 @@ export default function App() {
           {routes.map((r) => (
             <Route key={r.name} path={r.route} element={<r.Component />} />
           ))}
+          <Route path="*" element={<div className="mx-auto max-w-screen-xl px-6 py-24 text-center"><h1 className="text-4xl font-bold">404</h1><p className="text-muted-foreground mt-2">Página no encontrada.</p></div>} />
         </Routes>
       </Suspense>
     </BrowserRouter>
