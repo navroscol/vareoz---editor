@@ -128,3 +128,5 @@ export function RevealText({
     </div>
   );
 }
+
+export { RevealText as default };

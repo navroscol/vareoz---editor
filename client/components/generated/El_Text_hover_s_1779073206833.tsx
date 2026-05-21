@@ -50,3 +50,5 @@ function Text_03({
 }
 
 export { Text_03 }
+
+export { Text_03 as default };

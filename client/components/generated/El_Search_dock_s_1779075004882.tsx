@@ -92,3 +92,5 @@ export function ExpandingSearchDock({
     </div>
   );
 }
+
+export { ExpandingSearchDock as default };

@@ -89,3 +89,5 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
 Dock.displayName = "Dock"
 
 export { Dock }
+
+export { Dock as default };
