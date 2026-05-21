@@ -5,6 +5,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ──────────────────────────────────────────────────────────────────────
+ * Shape container CSS reset.
+ * Many 21st.dev / shadcn elements were authored for full-page use and use
+ * viewport units (vh, vw) or fixed positioning. When dropped into a
+ * pixel-bounded shape on the canvas they overflow / break layout.
+ * These rules scope-override the viewport units to the parent container so
+ * components fit their shape box exactly, without modifying the element
+ * sources. Applies inside [data-shape-container].
+ * ────────────────────────────────────────────────────────────────────── */
+[data-shape-container] .min-h-screen { min-height: 100% !important; }
+[data-shape-container] .h-screen { height: 100% !important; }
+[data-shape-container] .max-h-screen { max-height: 100% !important; }
+[data-shape-container] .min-w-screen { min-width: 100% !important; }
+[data-shape-container] .w-screen { width: 100% !important; }
+[data-shape-container] .max-w-screen { max-width: 100% !important; }
+[data-shape-container] .fixed { position: absolute !important; }
+[data-shape-container] [class*="h-[100vh]"] { height: 100% !important; }
+[data-shape-container] [class*="w-[100vw]"] { width: 100% !important; }
+[data-shape-container] [class*="min-h-[100vh]"] { min-height: 100% !important; }
+
 @layer base {
   /**
    * Tailwind CSS theme
