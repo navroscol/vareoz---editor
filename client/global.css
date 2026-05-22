@@ -21,6 +21,8 @@
 [data-shape-container] .w-screen { width: 100% !important; }
 [data-shape-container] .max-w-screen { max-width: 100% !important; }
 [data-shape-container] .fixed { position: absolute !important; }
+[data-shape-container] .sticky { position: relative !important; }
+[data-shape-container] .absolute.inset-0 { position: absolute !important; }
 [data-shape-container] [class*="h-[100vh]"] { height: 100% !important; }
 [data-shape-container] [class*="w-[100vw]"] { width: 100% !important; }
 [data-shape-container] [class*="min-h-[100vh]"] { min-height: 100% !important; }

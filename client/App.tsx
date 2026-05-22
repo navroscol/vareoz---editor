@@ -12,29 +12,42 @@ const routes = Object.entries(pageModules)
   })
   .sort((a, b) => (a.route === "/" ? -1 : b.route === "/" ? 1 : a.route.localeCompare(b.route)));
 
+// Solo se muestra la nav cuando hay más de una página: un proyecto de una
+// sola página se sirve a pantalla completa sin chrome encima.
+const showNav = routes.length > 1;
+
 export default function App() {
   return (
     <BrowserRouter>
-      <header className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur">
-        <nav className="mx-auto max-w-screen-xl flex items-center gap-1 px-4 py-3 text-sm overflow-x-auto">
-          <Link to="/" className="font-semibold mr-4 whitespace-nowrap">Proyecto</Link>
-          {routes.map((r) => (
-            <NavLink
-              key={r.name}
-              to={r.route}
-              end={r.route === "/"}
-              className={({ isActive }: { isActive: boolean }) =>
-                "px-3 py-1.5 rounded-md whitespace-nowrap " +
-                (isActive
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60")
-              }
-            >
-              {r.name}
-            </NavLink>
-          ))}
-        </nav>
-      </header>
+      {showNav && (
+        <header
+          className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur"
+          style={{ background: "rgba(255,255,255,0.85)", borderBottom: "1px solid #e5e7eb" }}
+        >
+          <nav
+            className="mx-auto max-w-screen-xl flex items-center gap-1 px-4 py-3 text-sm overflow-x-auto"
+            style={{ display: "flex", alignItems: "center", gap: 4, padding: "12px 16px", maxWidth: 1280, margin: "0 auto", overflowX: "auto" }}
+          >
+            <Link to="/" className="font-semibold mr-4 whitespace-nowrap" style={{ fontWeight: 600, marginRight: 16, whiteSpace: "nowrap" }}>Proyecto</Link>
+            {routes.map((r) => (
+              <NavLink
+                key={r.name}
+                to={r.route}
+                end={r.route === "/"}
+                className={({ isActive }: { isActive: boolean }) =>
+                  "px-3 py-1.5 rounded-md whitespace-nowrap " +
+                  (isActive
+                    ? "bg-muted text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/60")
+                }
+                style={{ padding: "6px 12px", borderRadius: 6, whiteSpace: "nowrap", textDecoration: "none" }}
+              >
+                {r.name}
+              </NavLink>
+            ))}
+          </nav>
+        </header>
+      )}
       <Suspense fallback={<div className="p-8 text-muted-foreground">Cargando…</div>}>
         <Routes>
           {routes.map((r) => (
