@@ -1,9 +1,12 @@
-// Pixel-perfect responsive wrapper (fill-width mode, like a real website).
-// The inner div keeps the design's native dimensions (absolute-positioned
-// shapes stay exact); a CSS transform scales it to fill the available WIDTH,
-// and the frame's height is set to the scaled height so nothing is cut off —
-// the page just scrolls vertically if the design is taller than the viewport.
-// No side gaps, no clipping, aspect ratio preserved.
+// Fit-to-viewport responsive wrapper.
+// The inner layer keeps the design's native pixel dimensions (so every
+// absolutely-positioned shape stays exact). A CSS transform scales the WHOLE
+// design to fit INSIDE the available box on BOTH axes (width AND height), so
+// the entire page is always fully visible — no scrolling, no zooming out —
+// on any screen (large desktop, small laptop, or phone). The design is never
+// reflowed (layout preserved exactly); it just shrinks/grows to fit. Any
+// leftover margin from a mismatched aspect ratio is filled with the page
+// background and the design is centered, like a centered page on a backdrop.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 
@@ -28,20 +31,34 @@ export function ResponsiveCanvas({
   // The true rendered height of the content. The design's declared `height`
   // (e.g. canvasH from a PDF page) is only a hint — shapes or full-bleed
   // 21st.dev components can render BELOW it. We measure the real layout height
-  // so the frame grows to fit and the bottom is never clipped.
+  // so the fit calculation accounts for ALL the content.
   const [contentH, setContentH] = React.useState(height);
+
+  // Recompute the scale that makes the whole design fit inside the frame on
+  // both axes. Driven by a ResizeObserver on the frame (true responsiveness:
+  // it recomputes on every viewport change — resize, rotate, devtools, etc.).
+  const recompute = React.useCallback(() => {
+    const el = frameRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const cw = r.width;
+    const ch = r.height;
+    if (cw > 0 && ch > 0 && Number.isFinite(cw) && Number.isFinite(ch)) {
+      setScale(Math.min(cw / width, ch / Math.max(height, contentH), maxScale));
+    }
+  }, [width, height, contentH, maxScale]);
 
   React.useEffect(() => {
     const el = frameRef.current;
-    if (!el || typeof ResizeObserver === "undefined") return;
-    const apply = (w: number) => {
-      if (w > 0 && Number.isFinite(w)) setScale(Math.min(w / width, maxScale));
-    };
-    const ro = new ResizeObserver(([entry]) => apply(entry.contentRect.width));
+    if (!el || typeof ResizeObserver === "undefined") {
+      recompute();
+      return;
+    }
+    const ro = new ResizeObserver(() => recompute());
     ro.observe(el);
-    apply(el.getBoundingClientRect().width);
+    recompute();
     return () => ro.disconnect();
-  }, [width, maxScale]);
+  }, [recompute]);
 
   // Track the real (unscaled) content height. scrollHeight captures any
   // absolutely-positioned children that overflow the declared design height.
@@ -65,23 +82,23 @@ export function ResponsiveCanvas({
       className={className}
       style={{
         width: "100%",
-        height: Math.round(contentH * scale),
+        height: "100%",
         position: "relative",
         overflow: "hidden",
         background,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <div
         ref={contentRef}
         style={{
           width,
-          // let the layer grow with its content (min = declared design height)
           minHeight: height,
+          flex: "none",
           transform: `scale(${scale})`,
-          transformOrigin: "top left",
-          position: "absolute",
-          top: 0,
-          left: 0,
+          transformOrigin: "center center",
           background,
         }}
       >
