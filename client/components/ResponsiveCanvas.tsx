@@ -1,7 +1,7 @@
-// Pixel-perfect responsive wrapper for the design canvas. The inner div
-// stays at the design's native dimensions (so absolute-positioned shapes
-// keep exact coords); the outer frame is fluid and a CSS transform scales
-// the inner to fit, preserving the aspect ratio.
+// Pixel-perfect responsive wrapper. The inner div keeps the design's native
+// dimensions (absolute-positioned shapes stay exact); a CSS transform scales
+// it to FIT the available box on BOTH axes (like object-fit: contain) and
+// centers it, so it never overflows or gets cut off — on any screen.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 
@@ -11,7 +11,7 @@ export function ResponsiveCanvas({
   children,
   className,
   background = "white",
-  maxScale = 1.6,
+  maxScale = 2,
 }: {
   width: number;
   height: number;
@@ -26,15 +26,21 @@ export function ResponsiveCanvas({
   React.useEffect(() => {
     const el = frameRef.current;
     if (!el || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(([entry]) => {
-      const w = entry.contentRect.width;
-      if (w > 0 && Number.isFinite(w)) {
-        setScale(Math.min(w / width, maxScale));
+    const measure = (w: number, h: number) => {
+      if (w > 0 && h > 0 && Number.isFinite(w) && Number.isFinite(h)) {
+        setScale(Math.min(w / width, h / height, maxScale));
       }
+    };
+    const ro = new ResizeObserver(([entry]) => {
+      const cr = entry.contentRect;
+      measure(cr.width, cr.height);
     });
     ro.observe(el);
+    // initial
+    const r = el.getBoundingClientRect();
+    measure(r.width, r.height);
     return () => ro.disconnect();
-  }, [width, maxScale]);
+  }, [width, height, maxScale]);
 
   return (
     <div
@@ -42,23 +48,23 @@ export function ResponsiveCanvas({
       className={className}
       style={{
         width: "100%",
-        margin: "0 auto",
+        height: "100%",
         position: "relative",
         overflow: "hidden",
-        aspectRatio: `${width} / ${height}`,
-        background,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <div
         style={{
           width,
           height,
+          flex: "0 0 auto",
           transform: `scale(${scale})`,
-          transformOrigin: "top left",
-          position: "absolute",
-          top: 0,
-          left: 0,
+          transformOrigin: "center center",
           background,
+          boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
         }}
       >
         {children}
