@@ -1,7 +1,9 @@
-// Pixel-perfect responsive wrapper. The inner div keeps the design's native
-// dimensions (absolute-positioned shapes stay exact); a CSS transform scales
-// it to FIT the available box on BOTH axes (like object-fit: contain) and
-// centers it, so it never overflows or gets cut off — on any screen.
+// Pixel-perfect responsive wrapper (fill-width mode, like a real website).
+// The inner div keeps the design's native dimensions (absolute-positioned
+// shapes stay exact); a CSS transform scales it to fill the available WIDTH,
+// and the frame's height is set to the scaled height so nothing is cut off —
+// the page just scrolls vertically if the design is taller than the viewport.
+// No side gaps, no clipping, aspect ratio preserved.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 
@@ -11,7 +13,7 @@ export function ResponsiveCanvas({
   children,
   className,
   background = "white",
-  maxScale = 2,
+  maxScale = 4,
 }: {
   width: number;
   height: number;
@@ -26,21 +28,14 @@ export function ResponsiveCanvas({
   React.useEffect(() => {
     const el = frameRef.current;
     if (!el || typeof ResizeObserver === "undefined") return;
-    const measure = (w: number, h: number) => {
-      if (w > 0 && h > 0 && Number.isFinite(w) && Number.isFinite(h)) {
-        setScale(Math.min(w / width, h / height, maxScale));
-      }
+    const apply = (w: number) => {
+      if (w > 0 && Number.isFinite(w)) setScale(Math.min(w / width, maxScale));
     };
-    const ro = new ResizeObserver(([entry]) => {
-      const cr = entry.contentRect;
-      measure(cr.width, cr.height);
-    });
+    const ro = new ResizeObserver(([entry]) => apply(entry.contentRect.width));
     ro.observe(el);
-    // initial
-    const r = el.getBoundingClientRect();
-    measure(r.width, r.height);
+    apply(el.getBoundingClientRect().width);
     return () => ro.disconnect();
-  }, [width, height, maxScale]);
+  }, [width, maxScale]);
 
   return (
     <div
@@ -48,23 +43,22 @@ export function ResponsiveCanvas({
       className={className}
       style={{
         width: "100%",
-        height: "100%",
+        height: Math.round(height * scale),
         position: "relative",
         overflow: "hidden",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        background,
       }}
     >
       <div
         style={{
           width,
           height,
-          flex: "0 0 auto",
           transform: `scale(${scale})`,
-          transformOrigin: "center center",
+          transformOrigin: "top left",
+          position: "absolute",
+          top: 0,
+          left: 0,
           background,
-          boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
         }}
       >
         {children}
